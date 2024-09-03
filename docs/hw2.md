@@ -3,7 +3,7 @@
 ### smaller heading
 
 **this is bold**
-* *this is italic* *
+*this is italic*
 
 ``` 
 This is a 
