@@ -33,5 +33,5 @@ Here is an ordered list
 
 This site will take you to known [formatting things](https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax)
 
-![FPGA stuff](https://www.google.com/url?sa=i&url=https%3A%2F%2Far.mouser.com%2Fnew%2Fxilinx%2Fxilinx-sp701-eval-kit%2F&psig=AOvVaw2oltebjHhfvfclBWWZzZEM&ust=1725470009909000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLjS4Omip4gDFQAAAAAdAAAAABAI).
+![FPGA stuff](https://upload.wikimedia.org/wikipedia/commons/f/fa/Altera_StratixIVGX_FPGA.jpg)
 
