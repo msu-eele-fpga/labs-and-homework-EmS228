@@ -3,17 +3,17 @@ use ieee.std_logic_1164.all;
 
 entity one_pulse is
 		port(
-			clk	: in std_ulogic;
-			rst	: in std_ulogic;
-			input	: in std_ulogic;
-			pulse	: out std_ulogic
+			clk	: in std_logic;
+			rst	: in std_logic;
+			input	: in std_logic;
+			pulse	: out std_logic
 		);
 end entity one_pulse;
 
 
 architecture one_pulse_arch of one_pulse is
 
-	signal clock_pulse : std_ulogic := '1';
+	signal clock_pulse : std_logic := '1';
 
 	begin
 	

@@ -1,16 +1,13 @@
 library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
-use work.assert_pkg.all;
-use work.print_pkg.all;
-use work.tb_pkg.all;
 
 entity async_conditioner is
 	port(
-		clk	: in std_ulogic;
-		rst	: in std_ulogic;
-		async	: in std_ulogic;
-		sync	: out std_ulogic
+		clk	: in std_logic;
+		rst	: in std_logic;
+		async	: in std_logic;
+		sync	: out std_logic
 	);
 end entity async_conditioner;
 
@@ -22,32 +19,32 @@ architecture async_conditioner_arch of async_conditioner is
 			debounce_time	: time := 200 ns
 		);
 		port(
-			clk		: in std_ulogic;
-			rst		: in std_ulogic;
-			input		: in std_ulogic;
-			debounced	: out std_ulogic
+			clk		: in std_logic;
+			rst		: in std_logic;
+			input		: in std_logic;
+			debounced	: out std_logic
 		);
 	end component;
 
 	component one_pulse
 		port(
-			clk	: in std_ulogic;
-			rst	: in std_ulogic;
-			input	: in std_ulogic;
-			pulse	: out std_ulogic
+			clk	: in std_logic;
+			rst	: in std_logic;
+			input	: in std_logic;
+			pulse	: out std_logic
 		);
 	end component;
 
 	component synchronizer
 		port (
-    			clk : in std_ulogic;
-    			async : in std_ulogic;
-    			sync : out std_ulogic
+    			clk : in std_logic;
+    			async : in std_logic;
+    			sync : out std_logic
 		);
 	end component;
 
-	signal sync_out	     : std_ulogic := '0';
-	signal debounced_out : std_ulogic := '0';
+	signal sync_out	     : std_logic := '0';
+	signal debounced_out : std_logic := '0';
 
 	begin
 

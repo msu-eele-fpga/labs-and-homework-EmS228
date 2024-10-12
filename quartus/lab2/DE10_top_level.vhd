@@ -25,79 +25,103 @@ USE altera.altera_primitives_components.all;
 -----------------------------------------------------------
  entity DE10_Top_Level is
 	port(
-		----------------------------------------
-		--  CLOCK Inputs
-		--  See DE10 Nano User Manual page 23
-		----------------------------------------
-		FPGA_CLK1_50  :  in std_logic;										--! 50 MHz clock input #1
-		FPGA_CLK2_50  :  in std_logic;										--! 50 MHz clock input #2
-		FPGA_CLK3_50  :  in std_logic;										--! 50 MHz clock input #3
-		
-		
-		----------------------------------------
-		--  Push Button Inputs (KEY) 
-		--  See DE10 Nano User Manual page 24
-		--  The KEY push button inputs produce a '0' 
-		--  when pressed (asserted)
-		--  and produce a '1' in the rest (non-pushed) state
-		--  a better label for KEY would be Push_Button_n 
-		----------------------------------------
-		KEY : in std_logic_vector(1 downto 0);								--! Two Pushbuttons (active low)
-		
-		
-		----------------------------------------
-		--  Slide Switch Inputs (SW) 
-		--  See DE10 Nano User Manual page 25
-		--  The slide switches produce a '0' when
-		--  in the down position 
-		--  (towards the edge of the board)
-		----------------------------------------
-		SW  : in std_logic_vector(3 downto 0);								--! Four Slide Switches 
-		
-		
-		----------------------------------------
-		--  LED Outputs 
-		--  See DE10 Nano User Manual page 26
-		--  Setting LED to 1 will turn it on
-		----------------------------------------
-		LED : out std_logic_vector(7 downto 0);							--! Eight LEDs
-		
-		
-		----------------------------------------
-		--  GPIO Expansion Headers (40-pin)
-		--  See DE10 Nano User Manual page 27
-		--  Pin 11 = 5V supply (1A max)
-		--  Pin 29 - 3.3 supply (1.5A max)
-		--  Pins 12, 30 GND
-		--  Note: the DE10-Nano GPIO_0 & GPIO_1 signals
-		--  have been replaced by
-		--  Audio_Mini_GPIO_0 & Audio_Mini_GPIO_1
-		--  since some of the DE10-Nano GPIO pins
-		--  have been dedicated to the Audio Mini
-		--  plug-in card.  The new signals 
-		--  Audio_Mini_GPIO_0 & Audio_Mini_GPIO_1 
-		--  contain the available GPIO.
-		----------------------------------------
-		--GPIO_0 : inout std_logic_vector(35 downto 0);					--! The 40 pin header on the top of the board
-		--GPIO_1 : inout std_logic_vector(35 downto 0);					--! The 40 pin header on the bottom of the board 
-		Audio_Mini_GPIO_0 : inout std_logic_vector(33 downto 0);	--! 34 available I/O pins on GPIO_0
-		Audio_Mini_GPIO_1 : inout std_logic_vector(12 downto 0)		--! 13 available I/O pins on GPIO_1 
-	
-		
-	);
+	----------------------------------------
+    --  Clock inputs
+    --  See DE10 Nano User Manual page 23
+    ----------------------------------------
+    --! 50 MHz clock input #1
+    fpga_clk1_50 : in    std_logic;
+    --! 50 MHz clock input #2
+    fpga_clk2_50 : in    std_logic;
+    --! 50 MHz clock input #3
+    fpga_clk3_50 : in    std_logic;
+
+    ----------------------------------------
+    --  Push button inputs (KEY)
+    --  See DE10 Nano User Manual page 24
+    --  The KEY push button inputs produce a '0'
+    --  when pressed (asserted)
+    --  and produce a '1' in the rest (non-pushed) state
+    ----------------------------------------
+    push_button_n : in    std_logic_vector(1 downto 0);
+
+    ----------------------------------------
+    --  Slide switch inputs (SW)
+    --  See DE10 Nano User Manual page 25
+    --  The slide switches produce a '0' when
+    --  in the down position
+    --  (towards the edge of the board)
+    ----------------------------------------
+    sw : in    std_logic_vector(3 downto 0);
+
+    ----------------------------------------
+    --  LED outputs
+    --  See DE10 Nano User Manual page 26
+    --  Setting LED to 1 will turn it on
+    ----------------------------------------
+    led : out   std_logic_vector(7 downto 0);
+
+    ----------------------------------------
+    --  GPIO expansion headers (40-pin)
+    --  See DE10 Nano User Manual page 27
+    --  Pin 11 = 5V supply (1A max)
+    --  Pin 29 - 3.3 supply (1.5A max)
+    --  Pins 12, 30 GND
+    ----------------------------------------
+    gpio_0 : inout std_logic_vector(35 downto 0);
+    gpio_1 : inout std_logic_vector(35 downto 0);
+
+    ----------------------------------------
+    --  Arudino headers
+    --  See DE10 Nano User Manual page 30
+    ----------------------------------------
+    arduino_io      : inout std_logic_vector(15 downto 0);
+    arduino_reset_n : inout std_logic
+  );
 end entity DE10_Top_Level;
 
 
 
 architecture DE10Nano_arch of DE10_Top_Level is
 
+	component led_patterns is
+		generic(
+			system_clock_period	: time := 20 ns
+		);
+		port(
+			clk		: in std_logic;
+			rst		: in std_logic;
+			push_button	: in std_logic;
+			switches	: in std_logic_vector(3 downto 0);
+			hps_led_control	: in boolean;
+			base_period	: in unsigned(7 downto 0);
+			led_reg		: in std_logic_vector(7 downto 0);
+			led		: out std_logic_vector(7 downto 0)
+		);
+	end component led_patterns;
+	
+	constant TWENTY_NANO	: time := 20 ns;
+	signal hps_led_controller	: boolean := false;
+	signal base_period_tb	: unsigned(7 downto 0) := "00001000";
+	signal led_reg_qu	: std_logic_vector(7 downto 0) := "00000000";
+
 begin
 	
--- Add VDHL code to connect the four switches (SW) to four LEDs
+	ledPatterns : component led_patterns
+			generic map(
+				system_clock_period => TWENTY_NANO
+			)
+			port map(
+				clk				=> fpga_clk1_50,
+				rst				=> not push_button_n(0),
+				push_button		=> not push_button_n(1),
+				switches			=> sw(3 downto 0),
+				hps_led_control	=> hps_led_controller,
+				base_period		=> base_period_tb,
+				led_reg			=> led_reg_qu,
+				led				=> led(7 downto 0)
+			);
 
-	LED(3 downto 0) <= SW;			--set LEDs3:0 to SW3:0
-	LED(7 downto 4) <= "0000";		--set remaining LEDs to zero so that no ports are left floating
-	
 end architecture DE10Nano_arch;
 
 

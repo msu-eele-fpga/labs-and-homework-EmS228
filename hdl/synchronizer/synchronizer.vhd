@@ -3,15 +3,15 @@ use IEEE.std_logic_1164.all;
 
 entity synchronizer is
 	port (
-    		clk : in std_ulogic;
-    		async : in std_ulogic;
-    		sync : out std_ulogic
+    		clk : in std_logic;
+    		async : in std_logic;
+    		sync : out std_logic
 	);
 end entity synchronizer;
 
 architecture synchronizer_arch of synchronizer is
 
-	  signal output : std_ulogic;
+	  signal output : std_logic;
 
 	begin
 		D_FLIP_FLOP_1 : process(clk)
