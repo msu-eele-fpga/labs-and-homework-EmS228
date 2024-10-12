@@ -7,16 +7,16 @@ entity debouncer is
 		debounce_time	: time := 100 ms
 	);
 	port(
-		clk		: in std_ulogic;
-		rst		: in std_ulogic;
-		input		: in std_ulogic;
-		debounced	: out std_ulogic
+		clk		: in std_logic;
+		rst		: in std_logic;
+		input		: in std_logic;
+		debounced	: out std_logic
 	);
 end entity debouncer;
 
 architecture debouncer_arch of debouncer is
 
-	signal previous : std_ulogic := 'U';
+	signal previous : std_logic := 'U';
 	signal stop 	: natural := ((debounce_time/clk_period) - 1);
 	signal counter  : natural := 0;		
 
