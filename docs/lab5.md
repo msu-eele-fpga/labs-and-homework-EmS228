@@ -24,5 +24,3 @@ This is the image that displays the sample depth from the signal configuration p
 to monitor your signals?
 
 The amount of memory that was required to monitor the signals was 6144 bits. This can be seen in the screenshots. 
-
-.
