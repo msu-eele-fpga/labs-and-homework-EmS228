@@ -120,7 +120,7 @@ architecture led_patterns_arch of led_patterns is
 	signal baseRateLED : std_logic := '0';
 	signal counter : integer range 0 to 268435455;
 
-	type State_Type is (s0, s1, s2, s3, s4, waitState);
+	type State_Type is (s0, s1, s2, s3, s4, waitState, softHat);
 	signal current_state, next_state, previous_state : State_Type;
 
 	begin
@@ -200,7 +200,7 @@ architecture led_patterns_arch of led_patterns is
 					current_state <= s0;
 				elsif (rising_edge(clk)) then
 					if(hps_led_control) then
-						-- do nothing for now!!!!
+						current_state <= softHat;
 					else
 						current_state <= next_state;
 					end if;
@@ -237,6 +237,7 @@ architecture led_patterns_arch of led_patterns is
 				when s4 => led(6 downto 0) <= LEDs4; enableTime <= false; previous_state <= current_state;
 				when waitState => led(6 downto 4) <= "000"; led(3 downto 0) <= switches;
 					enableTime <= true;
+				when softHat => led(6 downto 0) <= led_reg(6 downto 0);
 			end case;
 		end process;
 
