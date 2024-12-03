@@ -199,23 +199,6 @@ end entity DE10_top_level;
 
 
 architecture DE10Nano_arch of DE10_Top_Level is
-
-	component pwm_controller is
-		generic(
-			CLK_PERIOD : time := 20 ns
-		);
-		port(
-			clk	: in std_logic;
-			rst	: in std_logic;
-			-- PWM repetition period in milliseconds;
-			-- datatype (W.F) is individually assigned
-			period	: in unsigned(23 downto 0);
-			-- PWM duty cycle between [0,1]; out of range values are hard-limited
-			-- datatype (W.F) is individually assigned
-			duty_cycle 	: in unsigned(13 downto 0);
-			output		: out std_logic
-		);
-	end component pwm_controller;
 	
 	component soc_system is
     port (
@@ -267,9 +250,9 @@ architecture DE10Nano_arch of DE10_Top_Level is
       hps_io_hps_io_gpio_inst_gpio53  : inout std_logic;
       hps_io_hps_io_gpio_inst_gpio54  : inout std_logic;
       hps_io_hps_io_gpio_inst_gpio61  : inout std_logic;
-		led_patterns_push_button        : in    std_logic;             -- push_button
-      led_patterns_switches           : in    std_logic_vector(3 downto 0); -- switches
-      led_patterns_led                : out   std_logic_vector(7 downto 0); -- led
+      rgbled_output_red               : out   std_logic;	-- output_red
+      rgbled_output_green             : out   std_logic;	-- output_green
+      rgbled_output_blue              : out   std_logic;	-- output_blue
       memory_mem_a                    : out   std_logic_vector(14 downto 0);
       memory_mem_ba                   : out   std_logic_vector(2 downto 0);
       memory_mem_ck                   : out   std_logic;
@@ -295,8 +278,6 @@ architecture DE10Nano_arch of DE10_Top_Level is
 	signal hps_led_controller	: boolean := false;
 	signal base_period_tb	: unsigned(7 downto 0) := "00001000";
 	signal led_reg_qu	: std_logic_vector(7 downto 0) := "00000000";
-	signal period_tb	: unsigned(23 downto 0)	:= "000000100000000000000000";	-- (24.18) W.F 0.5ms
-	signal duty_cycle_tb	: unsigned(13 downto 0) := "00100000000000";	-- (14.13) W.F	25%
 
 begin
 			
@@ -365,9 +346,9 @@ begin
       hps_io_hps_io_gpio_inst_gpio54 => hps_key,
 
 		-- export signals
-		led_patterns_push_button	=> push_button_n(1),
-      led_patterns_switches		=> sw(3 downto 0),
-      led_patterns_led				=> led(7 downto 0),
+		rgbled_output_red          => gpio_0(0),               -- rgbled.output_red
+      rgbled_output_green        => gpio_0(1),             --       .output_green
+      rgbled_output_blue         => gpio_0(2),               --       .output_blue
 		
       -- DDR3
       memory_mem_a       => hps_ddr3_addr,
@@ -391,17 +372,6 @@ begin
       reset_reset_n => push_button_n(0) -- hook up to your reset signal; note that reset_reset_n is *active-low*
     );
 	 
-	 pwm_checker : component pwm_controller
-		generic map(
-			CLK_PERIOD => 20 ns
-		)
-		port map(
-			clk	=> fpga_clk1_50,
-			rst	=> not push_button_n(0),
-			period	=> period_tb,
-			duty_cycle	=> duty_cycle_tb,
-			output		=> gpio_0(1)
-		);
 
 end architecture DE10Nano_arch;
 
